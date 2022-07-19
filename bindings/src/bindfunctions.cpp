@@ -757,5 +757,11 @@ namespace pydeepstream {
                   return gst_nvevent_new_stream_reset(source_id);
               },
               pydsdoc::methodsDoc::gst_nvevent_new_stream_reset);
+
+        m.def("gst_nvevent_new_stream_eos",
+              [](uint32_t source_id) {
+                  return gst_nvevent_new_stream_eos(source_id);
+              },
+              pydsdoc::methodsDoc::gst_nvevent_new_stream_eos);
     }
 }

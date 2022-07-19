@@ -5,6 +5,12 @@ gst_nvevent_new_stream_reset
 .. autofunction:: pyds.gst_nvevent_new_stream_reset
 
 ======================
+gst_nvevent_new_stream_eos
+======================
+
+.. autofunction:: pyds.gst_nvevent_new_stream_eos
+
+======================
 get_segmentation_masks
 ======================
 

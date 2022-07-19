@@ -2065,6 +2065,11 @@ namespace pydsdoc
             is required.
 
             :arg source_id: source id for which this event needs to be generated.)pyds";
+
+        constexpr const char* gst_nvevent_new_stream_eos=R"pyds(
+            Creates a "custom EOS" event for the specified source.
+
+            :arg source_id: source id for which this event needs to be generated.)pyds";
 	}
 
 	namespace nvoptical
