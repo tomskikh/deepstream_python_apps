@@ -752,6 +752,33 @@ namespace pydeepstream {
               pydsdoc::methodsDoc::get_segmentation_masks);
 
         /* Start binding for /sources/includes/gst-nvevent.h */
+
+        /** Defines supported types of custom events. */
+        py::enum_<GstNvEventType>(m, "GstNvEventType",
+                                   pydsdoc::methodsDoc::GstNvEventTypeDoc::descr)
+                        /** Specifies a custom event to indicate Pad Added. */
+                .value("PAD_ADDED", GST_NVEVENT_PAD_ADDED,
+                       pydsdoc::methodsDoc::GstNvEventTypeDoc::PAD_ADDED)
+                        /** Specifies a custom event to indicate Pad Deleted. */
+                .value("PAD_DELETED", GST_NVEVENT_PAD_DELETED,
+                       pydsdoc::methodsDoc::GstNvEventTypeDoc::PAD_DELETED)
+                        /** Specifies a custom event to indicate EOS of
+                            a particular stream in a batch. */
+                .value("STREAM_EOS", GST_NVEVENT_STREAM_EOS,
+                       pydsdoc::methodsDoc::GstNvEventTypeDoc::STREAM_EOS)
+                        /** Specifies a custom event to indicate a stream segment. */
+                .value("STREAM_SEGMENT", GST_NVEVENT_STREAM_SEGMENT,
+                       pydsdoc::methodsDoc::GstNvEventTypeDoc::STREAM_SEGMENT)
+                        /** Specifies a custom event to indicate reset of
+                            a particular stream in a batch. */
+                .value("STREAM_RESET", GST_NVEVENT_STREAM_RESET,
+                       pydsdoc::methodsDoc::GstNvEventTypeDoc::STREAM_RESET)
+                        /** Specifies a custom event to indicate start of
+                            a particular stream in a batch. */
+                .value("STREAM_START", GST_NVEVENT_STREAM_START,
+                       pydsdoc::methodsDoc::GstNvEventTypeDoc::STREAM_START)
+                .export_values();
+
         /**
          * Sends the custom nvevent_new_stream_reset
          * for the element it is called upon. This event

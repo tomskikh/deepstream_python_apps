@@ -2060,6 +2060,19 @@ namespace pydsdoc
             
             :returns: 0 for success, -1 for failure.)pyds";
 
+        namespace GstNvEventTypeDoc
+        {
+            constexpr const char* descr = R"pyds(
+                *Enumerator*. Defines supported types of custom events.)pyds";
+
+            constexpr const char* PAD_ADDED=R"pyds(Specifies a custom event to indicate Pad Added.)pyds";
+            constexpr const char* PAD_DELETED=R"pyds(Specifies a custom event to indicate Pad Deleted.)pyds";
+            constexpr const char* STREAM_EOS=R"pyds(Specifies a custom event to indicate EOS of a particular stream in a batch.)pyds";
+            constexpr const char* STREAM_SEGMENT=R"pyds(Specifies a custom event to indicate a stream segment.)pyds";
+            constexpr const char* STREAM_RESET=R"pyds(Specifies a custom event to indicate reset of a particular stream in a batch.)pyds";
+            constexpr const char* STREAM_START=R"pyds(Specifies a custom event to indicate start of a particular stream in a batch.)pyds";
+        }
+
         constexpr const char* gst_element_send_nvevent_new_stream_reset=R"pyds(
             Sends a "custom reset" event on the given element for the specified source.
             This nvevent_new_stream_reset event is propogated downstream.
