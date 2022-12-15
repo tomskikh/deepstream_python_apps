@@ -185,7 +185,7 @@ def main(args):
         (workload_1, False),
         (workload_2, False),
         (workload_3, False),
-        (workload_4, False),
+        (workload_4, True),
     ]:
         sink_pad = workload.get_static_pad("sink")
         # sink_pad = sink.get_static_pad("sink")
