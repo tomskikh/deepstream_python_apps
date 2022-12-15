@@ -134,6 +134,10 @@ def main(args):
     streamdemux = Gst.ElementFactory.make("nvstreamdemux", "streamdemux")
     pipeline.add(streamdemux)
 
+    print("Creating queue")
+    queue = Gst.ElementFactory.make("queue", "queue")
+    pipeline.add(queue)
+
     # print("Creating converter")
     # converter = Gst.ElementFactory.make("nvvideoconvert", "converter")
     # pipeline.add(converter)
@@ -173,9 +177,12 @@ def main(args):
     assert workload_2.link(streamdemux)
 
     streamdemux_src_pad = streamdemux.get_request_pad('src_0')
-    workload_3_sink_pad = workload_3.get_static_pad('sink')
-    assert streamdemux_src_pad.link(workload_3_sink_pad) == Gst.PadLinkReturn.OK
+    # workload_3_sink_pad = workload_3.get_static_pad('sink')
+    # assert streamdemux_src_pad.link(workload_3_sink_pad) == Gst.PadLinkReturn.OK
+    queue_sink_pad = workload_3.get_static_pad('sink')
+    assert streamdemux_src_pad.link(queue_sink_pad) == Gst.PadLinkReturn.OK
 
+    assert queue.link(workload_3)
     assert workload_3.link(workload_4)
     assert workload_4.link(sink)
     # assert workload_4.link(converter)
