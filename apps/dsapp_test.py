@@ -179,7 +179,7 @@ def main(args):
     streamdemux_src_pad = streamdemux.get_request_pad('src_0')
     # workload_3_sink_pad = workload_3.get_static_pad('sink')
     # assert streamdemux_src_pad.link(workload_3_sink_pad) == Gst.PadLinkReturn.OK
-    queue_sink_pad = workload_3.get_static_pad('sink')
+    queue_sink_pad = queue.get_static_pad('sink')
     assert streamdemux_src_pad.link(queue_sink_pad) == Gst.PadLinkReturn.OK
 
     assert queue.link(workload_3)
