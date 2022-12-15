@@ -68,6 +68,3 @@ RUN cmake -DPIP_PLATFORM=linux_aarch64 .. \
     && make
 
 RUN pip3 install --no-cache-dir ./pyds-1.1.4-py3-none-linux_aarch64.whl
-
-COPY apps /apps
-WORKDIR /apps
