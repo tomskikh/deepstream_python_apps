@@ -130,6 +130,10 @@ def main(args):
     workload_4 = Gst.ElementFactory.make("identity", "workload-4")
     pipeline.add(workload_4)
 
+    print("Creating streamdemux")
+    streamdemux = Gst.ElementFactory.make("nvstreamdemux", "streamdemux")
+    pipeline.add(streamdemux)
+
     # print("Creating converter")
     # converter = Gst.ElementFactory.make("nvvideoconvert", "converter")
     # pipeline.add(converter)
@@ -166,7 +170,12 @@ def main(args):
 
     assert streammux.link(workload_1)
     assert workload_1.link(workload_2)
-    assert workload_2.link(workload_3)
+    assert workload_2.link(streamdemux)
+
+    streamdemux_src_pad = streamdemux.get_request_pad('src_0')
+    workload_3_sink_pad = workload_3.get_static_pad('sink')
+    assert streamdemux_src_pad.link(workload_3_sink_pad) == Gst.PadLinkReturn.OK
+
     assert workload_3.link(workload_4)
     assert workload_4.link(sink)
     # assert workload_4.link(converter)
