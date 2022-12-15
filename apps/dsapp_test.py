@@ -130,21 +130,21 @@ def main(args):
     workload_4 = Gst.ElementFactory.make("identity", "workload-4")
     pipeline.add(workload_4)
 
-    print("Creating converter")
-    converter = Gst.ElementFactory.make("nvvideoconvert", "converter")
-    pipeline.add(converter)
-
-    print("Creating encoder")
-    encoder = Gst.ElementFactory.make("nvv4l2h264enc", "encoder")
-    pipeline.add(encoder)
-
-    print("Creating parser")
-    parser = Gst.ElementFactory.make("h264parse", "parser")
-    pipeline.add(parser)
+    # print("Creating converter")
+    # converter = Gst.ElementFactory.make("nvvideoconvert", "converter")
+    # pipeline.add(converter)
+    #
+    # print("Creating encoder")
+    # encoder = Gst.ElementFactory.make("nvv4l2h264enc", "encoder")
+    # pipeline.add(encoder)
+    #
+    # print("Creating parser")
+    # parser = Gst.ElementFactory.make("h264parse", "parser")
+    # pipeline.add(parser)
 
     print("Creating sink")
-    sink = Gst.ElementFactory.make("filesink", "sink")
-    # sink = Gst.ElementFactory.make("fakesink", "sink")
+    # sink = Gst.ElementFactory.make("filesink", "sink")
+    sink = Gst.ElementFactory.make("fakesink", "sink")
     pipeline.add(sink)
 
     if is_live:
@@ -156,11 +156,11 @@ def main(args):
 
     sink.set_property("sync", 0)
     sink.set_property("qos", 0)
-    sink.set_property("location", "/data/result.h264")
+    # sink.set_property("location", "/data/result.h264")
 
     if not is_aarch64():
         streammux.set_property("nvbuf-memory-type", int(pyds.NVBUF_MEM_CUDA_UNIFIED))
-        converter.set_property("nvbuf-memory-type", int(pyds.NVBUF_MEM_CUDA_UNIFIED))
+        # converter.set_property("nvbuf-memory-type", int(pyds.NVBUF_MEM_CUDA_UNIFIED))
 
     print("Linking elements in the Pipeline")
 
@@ -168,10 +168,11 @@ def main(args):
     assert workload_1.link(workload_2)
     assert workload_2.link(workload_3)
     assert workload_3.link(workload_4)
-    assert workload_4.link(converter)
-    assert converter.link(encoder)
-    assert encoder.link(parser)
-    assert parser.link(sink)
+    assert workload_4.link(sink)
+    # assert workload_4.link(converter)
+    # assert converter.link(encoder)
+    # assert encoder.link(parser)
+    # assert parser.link(sink)
     # assert streammux.link(sink)
 
     # create an event loop and feed gstreamer bus messages to it
