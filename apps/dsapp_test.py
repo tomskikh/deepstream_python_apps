@@ -144,10 +144,14 @@ def main(args):
     queue = Gst.ElementFactory.make("queue", "queue")
     pipeline.add(queue)
 
-    # print("Creating converter")
-    # converter = Gst.ElementFactory.make("nvvideoconvert", "converter")
-    # pipeline.add(converter)
-    #
+    print("Creating converter")
+    converter = Gst.ElementFactory.make("nvvideoconvert", "converter")
+    pipeline.add(converter)
+
+    print("Creating sink_capsfilter")
+    sink_capsfilter = Gst.ElementFactory.make("capsfilter", "sink_capsfilter")
+    pipeline.add(sink_capsfilter)
+
     # print("Creating encoder")
     # encoder = Gst.ElementFactory.make("nvv4l2h264enc", "encoder")
     # pipeline.add(encoder)
@@ -175,7 +179,12 @@ def main(args):
 
     if not is_aarch64():
         streammux.set_property("nvbuf-memory-type", int(pyds.NVBUF_MEM_CUDA_UNIFIED))
-        # converter.set_property("nvbuf-memory-type", int(pyds.NVBUF_MEM_CUDA_UNIFIED))
+        converter.set_property("nvbuf-memory-type", int(pyds.NVBUF_MEM_CUDA_UNIFIED))
+
+    sink_capsfilter.set_property(
+        'caps',
+        Gst.Caps.from_string('video/x-raw(memory:NVMM), width=480, height=480')
+    )
 
     print("Linking elements in the Pipeline")
 
@@ -193,7 +202,9 @@ def main(args):
     assert streamdemux_src_pad.link(queue_sink_pad) == Gst.PadLinkReturn.OK
 
     assert queue.link(workload_3)
-    assert workload_3.link(workload_4)
+    assert workload_3.link(converter)
+    assert converter.link(sink_capsfilter)
+    assert sink_capsfilter.link(workload_4)
     assert workload_4.link(sink)
     # assert workload_4.link(converter)
     # assert converter.link(encoder)
@@ -208,14 +219,14 @@ def main(args):
     bus.connect("message", bus_call, loop)
 
     for workload, get_bytes, draw, unmap in [
-        (workload_1, False, False, False),
-        (workload_2, False, False, False),
-        (workload_3, False, False, False),
-        (workload_4, False, False, False),
-        (sink, False, False, False),
+        (workload_1, False, True, False),
+        (workload_2, False, True, False),
+        # demux
+        # (workload_3, False, False, False),
+        # (workload_4, False, False, False),
+        (sink, True, False, True),
     ]:
         sink_pad = workload.get_static_pad("sink")
-        # sink_pad = sink.get_static_pad("sink")
         if not sink_pad:
             sys.stderr.write("Unable to get sink pad")
         else:
