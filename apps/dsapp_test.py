@@ -183,7 +183,7 @@ def main(args):
 
     sink_capsfilter.set_property(
         'caps',
-        Gst.Caps.from_string('video/x-raw(memory:NVMM), width=480, height=480')
+        Gst.Caps.from_string('video/x-raw(memory:NVMM), format=RGBA, width=480, height=480')
     )
 
     print("Linking elements in the Pipeline")
