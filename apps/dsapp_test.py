@@ -200,7 +200,7 @@ def main(args):
     bus.add_signal_watch()
     bus.connect("message", bus_call, loop)
 
-    for workload, unmap in [
+    for workload, get_bytes, draw, unmap in [
         (workload_1, False, False, False),
         (workload_2, False, False, False),
         (workload_3, False, False, False),
@@ -212,7 +212,13 @@ def main(args):
         if not sink_pad:
             sys.stderr.write("Unable to get sink pad")
         else:
-            sink_pad.add_probe(Gst.PadProbeType.BUFFER, pad_buffer_probe, unmap)
+            sink_pad.add_probe(
+                Gst.PadProbeType.BUFFER,
+                pad_buffer_probe,
+                get_bytes,
+                draw,
+                unmap,
+            )
 
     print("Now playing...")
     for i, source in enumerate(args[:-1]):
