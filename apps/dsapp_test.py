@@ -26,7 +26,7 @@ def log_nvds_buf_surface(element_name: str, buffer: Gst.Buffer):
         'batchSize': nvbufsurface.batchSize,
         'numFilled': nvbufsurface.numFilled,
         'isContiguous': nvbufsurface.isContiguous,
-        'memType': nvbufsurface.memType,
+        'memType': (int(nvbufsurface.memType), nvbufsurface.memType),
         'surfaceList': {
             'width': nvbufsurface.surfaceList.width,
             'height': nvbufsurface.surfaceList.height,
