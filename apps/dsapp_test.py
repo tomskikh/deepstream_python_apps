@@ -17,7 +17,8 @@ import pyds
 
 
 def log_nvds_buf_surface(element_name: str, buffer: Gst.Buffer):
-    map_info: Gst.MapInfo = buffer.map(Gst.MapFlags.READ)
+    mapped, map_info = buffer.map(Gst.MapFlags.READ)
+    assert mapped, f'failed to map buffer {buffer.pts}'
     nvbufsurface_p = ctypes.cast(map_info.data, ctypes.c_void_p)
     nvbufsurface = pyds.NvBufSurface.cast(nvbufsurface_p.value)
     surface_info = {
