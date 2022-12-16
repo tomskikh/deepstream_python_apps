@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import ctypes
 import sys
 import time
 
@@ -15,8 +16,47 @@ from common.bus_call import bus_call
 import pyds
 
 
+def log_nvds_buf_surface(element_name: str, buffer: Gst.Buffer):
+    map_info: Gst.MapInfo = buffer.map(Gst.MapFlags.READ)
+    nvbufsurface_p = ctypes.cast(map_info.data, ctypes.c_void_p)
+    nvbufsurface = pyds.NvBufSurface.cast(nvbufsurface_p.value)
+    surface_info = {
+        'gpuId': nvbufsurface.gpuId,
+        'batchSize': nvbufsurface.batchSize,
+        'numFilled': nvbufsurface.numFilled,
+        'isContiguous': nvbufsurface.isContiguous,
+        'memType': nvbufsurface.memType,
+        'surfaceList': {
+            'width': nvbufsurface.surfaceList.width,
+            'height': nvbufsurface.surfaceList.height,
+            'pitch': nvbufsurface.surfaceList.pitch,
+            'colorFormat': repr(nvbufsurface.surfaceList.colorFormat),
+            'layout': nvbufsurface.surfaceList.layout,
+            'bufferDesc': nvbufsurface.surfaceList.bufferDesc,
+            'dataSize': nvbufsurface.surfaceList.dataSize,
+            'dataPtr': nvbufsurface.surfaceList.dataPtr,
+            'planeParams': {
+                'num_planes': nvbufsurface.surfaceList.planeParams.num_planes,
+                'width': nvbufsurface.surfaceList.planeParams.width,
+                'height': nvbufsurface.surfaceList.planeParams.height,
+                'pitch': nvbufsurface.surfaceList.planeParams.pitch,
+                'offset': nvbufsurface.surfaceList.planeParams.offset,
+                'psize': nvbufsurface.surfaceList.planeParams.psize,
+                'bytesPerPix': nvbufsurface.surfaceList.planeParams.bytesPerPix,
+            },
+            'mappedAddr': {
+                'addr': nvbufsurface.surfaceList.mappedAddr.addr,
+                'eglImage': nvbufsurface.surfaceList.mappedAddr.eglImage,
+            },
+        },
+    }
+    buffer.unmap(map_info)
+    print(f'{element_name} | {buffer.pts} | {surface_info}')
+
+
 def pad_buffer_probe(pad: Gst.Pad, info: Gst.PadProbeInfo, get_bytes: bool, draw: bool, unmap: bool):
     gst_buffer: Gst.Buffer = info.get_buffer()
+    log_nvds_buf_surface(pad.get_parent().get_name(), gst_buffer)
     batch_meta = pyds.gst_buffer_get_nvds_batch_meta(hash(gst_buffer))
     l_frame = batch_meta.frame_meta_list
     while l_frame is not None:
@@ -219,12 +259,12 @@ def main(args):
     bus.connect("message", bus_call, loop)
 
     for workload, get_bytes, draw, unmap in [
-        (workload_1, False, True, False),
-        (workload_2, False, True, False),
+        (workload_1, True, True, False),
+        # (workload_2, True, True, False),
         # demux
-        # (workload_3, False, False, False),
-        # (workload_4, False, False, False),
-        (sink, True, False, True),
+        # (workload_3, True, True, False),
+        # (workload_4, True, True, False),
+        (sink, True, True, False),
     ]:
         sink_pad = workload.get_static_pad("sink")
         if not sink_pad:
