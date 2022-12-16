@@ -15,7 +15,7 @@ from common.bus_call import bus_call
 import pyds
 
 
-def pad_buffer_probe(pad: Gst.Pad, info: Gst.PadProbeInfo, unmap: bool):
+def pad_buffer_probe(pad: Gst.Pad, info: Gst.PadProbeInfo, get_bytes: bool, unmap: bool, draw: bool):
     gst_buffer: Gst.Buffer = info.get_buffer()
     batch_meta = pyds.gst_buffer_get_nvds_batch_meta(hash(gst_buffer))
     l_frame = batch_meta.frame_meta_list
@@ -27,8 +27,11 @@ def pad_buffer_probe(pad: Gst.Pad, info: Gst.PadProbeInfo, unmap: bool):
 
         n_frame: np.ndarray = pyds.get_nvds_buf_surface(hash(gst_buffer), frame_meta.batch_id)
 
-        cv2.rectangle(n_frame, (150, 50), (600, 300), (0, 255, 0, 0), 4)
-        frame_bytes = n_frame.tobytes()
+        if draw:
+            cv2.rectangle(n_frame, (150, 50), (600, 300), (0, 255, 0, 0), 4)
+        frame_bytes = b''
+        if get_bytes:
+            frame_bytes = n_frame.tobytes()
         print(
             f'{pad.get_parent().get_name()} | #{frame_meta.frame_num}'
             f' resolution: {n_frame.shape}'
@@ -198,11 +201,11 @@ def main(args):
     bus.connect("message", bus_call, loop)
 
     for workload, unmap in [
-        (workload_1, False),
-        (workload_2, True),
-        # (workload_3, False),
-        # (workload_4, True),
-        (sink, False),
+        (workload_1, False, False, False),
+        (workload_2, False, False, False),
+        (workload_3, False, False, False),
+        (workload_4, False, False, False),
+        (sink, False, False, False),
     ]:
         sink_pad = workload.get_static_pad("sink")
         # sink_pad = sink.get_static_pad("sink")
