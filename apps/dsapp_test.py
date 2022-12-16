@@ -127,8 +127,8 @@ def main(args):
     pipeline.add(workload_2)
     workload_3 = Gst.ElementFactory.make("identity", "workload-3")
     pipeline.add(workload_3)
-    workload_4 = Gst.ElementFactory.make("identity", "workload-4")
-    pipeline.add(workload_4)
+    # workload_4 = Gst.ElementFactory.make("identity", "workload-4")
+    # pipeline.add(workload_4)
 
     print("Creating streamdemux")
     streamdemux = Gst.ElementFactory.make("nvstreamdemux", "streamdemux")
@@ -183,8 +183,9 @@ def main(args):
     assert streamdemux_src_pad.link(queue_sink_pad) == Gst.PadLinkReturn.OK
 
     assert queue.link(workload_3)
-    assert workload_3.link(workload_4)
-    assert workload_4.link(sink)
+    assert workload_3.link(sink)
+    # assert workload_3.link(workload_4)
+    # assert workload_4.link(sink)
     # assert workload_4.link(converter)
     # assert converter.link(encoder)
     # assert encoder.link(parser)
@@ -199,9 +200,9 @@ def main(args):
 
     for workload, unmap in [
         (workload_1, False),
-        (workload_2, False),
+        (workload_2, True),
         (workload_3, False),
-        (workload_4, True),
+        # (workload_4, True),
     ]:
         sink_pad = workload.get_static_pad("sink")
         # sink_pad = sink.get_static_pad("sink")
