@@ -38,6 +38,9 @@ def pad_buffer_probe(pad: Gst.Pad, info: Gst.PadProbeInfo, get_bytes: bool, draw
             f' size: {len(frame_bytes)} bytes'
         )
 
+        del n_frame
+        del frame_bytes
+
         if unmap:
             pyds.unmap_nvds_buf_surface(hash(gst_buffer), frame_meta.batch_id)
 
@@ -167,6 +170,7 @@ def main(args):
 
     sink.set_property("sync", 0)
     sink.set_property("qos", 0)
+    sink.set_property("enable-last-sample", 0)
     # sink.set_property("location", "/data/result.h264")
 
     if not is_aarch64():
@@ -180,6 +184,9 @@ def main(args):
     assert workload_2.link(streamdemux)
 
     streamdemux_src_pad = streamdemux.get_request_pad('src_0')
+    streamdemux.get_request_pad('src_1')
+    streamdemux.get_request_pad('src_2')
+    streamdemux.get_request_pad('src_3')
     # workload_3_sink_pad = workload_3.get_static_pad('sink')
     # assert streamdemux_src_pad.link(workload_3_sink_pad) == Gst.PadLinkReturn.OK
     queue_sink_pad = queue.get_static_pad('sink')
