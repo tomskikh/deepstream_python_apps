@@ -15,7 +15,7 @@ from common.bus_call import bus_call
 import pyds
 
 
-def pad_buffer_probe(pad: Gst.Pad, info: Gst.PadProbeInfo, get_bytes: bool, unmap: bool, draw: bool):
+def pad_buffer_probe(pad: Gst.Pad, info: Gst.PadProbeInfo, get_bytes: bool, draw: bool, unmap: bool):
     gst_buffer: Gst.Buffer = info.get_buffer()
     batch_meta = pyds.gst_buffer_get_nvds_batch_meta(hash(gst_buffer))
     l_frame = batch_meta.frame_meta_list
