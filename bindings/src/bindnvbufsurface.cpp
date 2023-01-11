@@ -382,6 +382,50 @@ namespace pydeepstream {
                          return (NvBufSurface *) data;
                      },
                      py::return_value_policy::reference,
-                     pydsdoc::nvbufdoc::NvBufSurfaceDoc::cast);
+                     pydsdoc::nvbufdoc::NvBufSurfaceDoc::cast)
+
+                .def("from_gst_buffer",
+                     [](size_t gst_buffer) {
+                         auto *buffer = reinterpret_cast<GstBuffer *>(gst_buffer);
+                         GstMapInfo map_info;
+                         gst_buffer_map(buffer, &map_info, GST_MAP_READ);
+                         auto *nvsurface = reinterpret_cast<NvBufSurface *>(map_info.data);
+                         gst_buffer_unmap(buffer, &map_info);
+
+                         std::cout << "nvsurface: " << nvsurface << std::endl;
+                         std::cout << "nvsurface->gpuId        : " << nvsurface->gpuId << std::endl;
+                         std::cout << "nvsurface->batchSize    : " << nvsurface->batchSize << std::endl;
+                         std::cout << "nvsurface->numFilled    : " << nvsurface->numFilled << std::endl;
+                         std::cout << "nvsurface->isContiguous : " << nvsurface->isContiguous << std::endl;
+                         std::cout << "nvsurface->memType      : " << nvsurface->memType << std::endl;
+                         std::cout << "nvsurface->surfaceList  : " << nvsurface->surfaceList << std::endl;
+                         const NvBufSurfaceParams &surface = nvsurface->surfaceList[0];
+                         std::cout << "surface.width       : " << surface.width << std::endl;
+                         std::cout << "surface.height      : " << surface.height << std::endl;
+                         std::cout << "surface.pitch       : " << surface.pitch << std::endl;
+                         //std::cout << "surface.colorFormat : " << surface.colorFormat << std::endl;
+                         //std::cout << "surface.layout      : " << surface.layout << std::endl;
+                         std::cout << "surface.bufferDesc  : " << surface.bufferDesc << std::endl;
+                         std::cout << "surface.dataSize    : " << surface.dataSize << std::endl;
+                         std::cout << "surface.dataPtr     : " << surface.dataPtr << std::endl;
+                         std::cout << "nullptr             : " << nullptr << std::endl;
+                         //std::cout << "surface.planeParams : " << surface.planeParams << std::endl;
+                         //std::cout << "surface.mappedAddr  : " << surface.mappedAddr << std::endl;
+
+                         return nvsurface;
+                     },
+                     py::return_value_policy::reference)
+
+                .def("get_data_ptr",
+                     [](size_t gst_buffer, int batch_id) {
+                         auto *buffer = reinterpret_cast<GstBuffer *>(gst_buffer);
+                         GstMapInfo map_info;
+                         gst_buffer_map(buffer, &map_info, GST_MAP_READ);
+                         auto *nvsurface = reinterpret_cast<NvBufSurface *>(map_info.data);
+                         gst_buffer_unmap(buffer, &map_info);
+                         const NvBufSurfaceParams &surface = nvsurface->surfaceList[batch_id];
+                         return (unsigned long) surface.dataPtr;
+                     },
+                     py::return_value_policy::reference);
     }
 }
